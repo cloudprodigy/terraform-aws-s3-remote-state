@@ -1,4 +1,4 @@
 /**
+ * # Remote state bucket
  *
- * This module creates following resources:
  */

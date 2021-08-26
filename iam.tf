@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "tf_backend_bucket_policy" {
 }
 
 resource "aws_iam_policy" "tf_policy" {
-  name        = "tf-backend-policy"
+  name_prefix = "tf-backend-policy"
   description = "This allows terraform to communicate to the main state in s3 and dynamo for locking"
 
   policy = <<-EOF

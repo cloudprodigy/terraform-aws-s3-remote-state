@@ -1,29 +1,37 @@
-resource "aws_s3_bucket" "tf_backend_bucket" {
+resource "aws_s3_bucket" "tf_backend_bucket" { #tfsec:ignore:AWS002 tfsec:ignore:AWS017 tfsec:ignore:AWS077
   #ts:skip=AWS.S3Bucket.DS.High.1043 False positive, default is same account only
   bucket = "${var.account_id}-${var.bucket_name}"
-  acl    = "private"
   tags   = local.common_tags
-
-  versioning {
-    enabled = true
-  }
-
   lifecycle {
     prevent_destroy = true
   }
+}
 
-  logging {
-    target_bucket = var.logging_bucket_name
-    target_prefix = "${var.bucket_name}/tf-state/"
+resource "aws_s3_bucket_acl" "this" {
+  bucket = aws_s3_bucket.tf_backend_bucket.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_versioning" "this" {
+  bucket = aws_s3_bucket.tf_backend_bucket.id
+  versioning_configuration {
+    status = "Enabled"
   }
+}
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
+resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
+  bucket = aws_s3_bucket.tf_backend_bucket.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
     }
   }
+}
+
+resource "aws_s3_bucket_logging" "this" {
+  bucket        = aws_s3_bucket.tf_backend_bucket.id
+  target_bucket = var.logging_bucket_name
+  target_prefix = "${var.bucket_name}/tf-state/"
 }
 
 resource "aws_s3_bucket_policy" "tf_backend_bucket_policy" {

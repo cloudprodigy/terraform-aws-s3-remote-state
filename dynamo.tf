@@ -1,5 +1,6 @@
+#tfsec:ignore:AWS086   #Ignore point in time recovery warnings
 resource "aws_dynamodb_table" "tf_backend_state_lock" {
-  #tfsec:ignore:AWS086   #Ignore point in time recovery warnings
+
   name = var.dynamo_table_name
 
   read_capacity  = 1
